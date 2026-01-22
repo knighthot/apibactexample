@@ -1,0 +1,230 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+model PkkService {
+  id                      Int      @id @default(autoincrement())
+  nomor_pkk               String   @unique // PKK Number [cite: 54]
+  nama_kapal              String   // Vessel Name [cite: 54]
+  call_sign               String   // Call Sign [cite: 54]
+  tanda_pendaftaran_kapal String   // Ship Registry No [cite: 54]
+  tanggal_eta             DateTime // ETA DateTime [cite: 54]
+  tanggal_etd             DateTime // ETD DateTime [cite: 54]
+  jenis_trayek            String   // jenis_trayek [cite: 54]
+  timestamp               DateTime @default(now()) // API Timestamp [cite: 54]
+
+  @@map("pkk_services")
+}
+
+
+// 2. Transportation Service (BSIMS to N4)
+
+model TransportationService {
+  id               Int      @id @default(autoincrement())
+  no_kendaraan     String   // Vehicle Number [cite: 55]
+  nama_perusahaan  String   // Company Name [cite: 55]
+  nama_perorangan  String   // Driver/Owner Name [cite: 55]
+  available        String   // available status [cite: 55]
+  masa_expired     DateTime // Permit Expiry Date [cite: 55]
+  timestamp        DateTime @default(now()) // API Timestamp [cite: 55]
+
+  @@map("transportation_services")
+}
+
+
+// 3. SPPB Service (BSIMS to N4)
+model SppbService {
+  id              Int      @id @default(autoincrement())
+  nomor_sppb      String   @unique // SPPB Number [cite: 61]
+  tanggal_sppb    DateTime // SPPB Date [cite: 61]
+  nomor_kontainer String   // Container Number [cite: 61]
+  nomor_bl        String   // Bill of Lading Number [cite: 61]
+  timestamp       DateTime @default(now()) // Current API Timestamp [cite: 61]
+
+  @@map("sppb_services")
+}
+
+
+// 4. SP2 Service (N4 to BSIMS)
+
+model Sp2Service {
+  id                     Int      @id @default(autoincrement())
+  nomor_sp2              String   @unique // SP2 Number [cite: 63]
+  nomor_do_pelayaran     String   // Shipping Line DO [cite: 63]
+  nomor_kontainer        String   // Container Number [cite: 63]
+  nomor_bl               String   // Bill of Lading No [cite: 63]
+  iso_code               String?  // Container ISO Code [cite: 63]
+  pemilik_kontainer      String?  // Container Owner [cite: 63]
+  nama_penerima          String   // Consignee Name [cite: 63]
+  npwp_penerima          String?  // Consignee Tax ID [cite: 63]
+  perusahaan_trucking    String?  // Trucking Company [cite: 63]
+  stid_truk              String?  // STID Number [cite: 63]
+  nopol_truk             String?  // Truck Plate Number [cite: 63]
+  nama_supir             String?  // Driver Name [cite: 63]
+  pin_gate               String?  // Gate Pass PIN [cite: 63]
+  tgl_awal_berlaku       DateTime // Valid From [cite: 63]
+  tgl_akhir_berlaku      DateTime // Valid Until [cite: 63]
+  batas_waktu_storage    DateTime? // Storage Paid Until [cite: 63]
+  status_hold            Boolean  @default(false) // Hold Status [cite: 63]
+  status_gate            String?  // Gate Status [cite: 63]
+  created_at             DateTime @default(now()) // Record Creation Date [cite: 63]
+  updated_at             DateTime @updatedAt // Record Last Update Date [cite: 63]
+  timestamp              DateTime @default(now()) // Current API Timestamp [cite: 63]
+
+  @@map("sp2_services")
+}
+
+// 5. CODECO SERVICE (N4 to BSIMS)
+// Berdasarkan Lampiran Berita Acara Spesifikasi Teknis 
+model CodecoService {
+  id                 Int       @id @default(autoincrement())
+  
+  // Identitas Transaksi & Gate
+  ref_number         String    // Ref Number 
+  id_gatepass        String    // Gatepass id 
+  transportation_id  String    // Transportation id 
+  no_kendaraan       String    // Vehicle number 
+  category           String    // Category 
+  kd_transaksi       String    // Transaction code 
+  ref_transaksi      String?   // Transaction ref 
+  kd_dok_inout       String?   // Dok inout code 
+  car                String?   // Car 
+  no_dok_inout       String?   // Dok inout number 
+  tgl_dok_inout      DateTime? // Dok inout date 
+  
+  // Pengajuan & Transportasi
+  no_pengajuan       String?   // Submission number 
+  tgl_pengajuan      DateTime? // Submission date 
+  nm_angkut          String?   // Name 
+  call_sign          String?   // Call sign 
+  spj_no             String?   // Spj number 
+  spj_date           DateTime? // Spj date 
+  no_voy_flight      String?   // Voy flight number 
+  
+  // Data Jumlah & Lokasi
+  jml_total          Int?      // Amount 
+  jml_out            Int?      // Out Amount 
+  gate_in            DateTime? // Gate in 
+  gate_out           DateTime? // Gate out 
+  kd_pelabuhan       String?   // Port code 
+  kd_gudang          String?   // Warehouse code 
+  kd_tps             String?   // Tps code 
+  kd_pbm             String?   // PBM code 
+  
+  // Data Shipping & Status
+  kd_shipping        String?   // Shipping code 
+  kd_shipping_line   String?   // Shipping line code 
+  kd_status          String?   // Status code 
+  kd_kelompok        String?   // Group code 
+  
+  // Data Kontainer (Container Details)
+  no_cont            String    // Cont number 
+  uk_cont            String    // Cont uk 
+  jns_cont           String    // Cont type 
+  jns_cont_nm        String?   // Cont type name 
+  fl_cont_kosong     String?   // Cont empty fl 
+  fl_cont_kosong_nm  String?   // Cont empty fl name 
+  
+  // Data Dokumen & Manifest
+  no_bl_awb          String    // Bl awb number 
+  tgl_bl_awb         DateTime? // Bl awb date 
+  no_bc11            String?   // Bc11 number 
+  tgl_bc11           DateTime? // Bc11 date 
+  no_pos_bc11        String?   // Bc11 pos number 
+  no_segel_bc        String?   // Bc segel number 
+  
+  // Data Consignee & Fisik
+  id_consignee       String?   // Consignee id 
+  consignee          String?   // Consignee 
+  bruto              Float?    // Bruto 
+  volume             Float?    // Volume 
+  ref_id_detil       String?   // Detail ref id 
+
+  // Metadata internal (Saran tambahan untuk tracking)
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  @@map("codeco_services")
+}
+
+// 6. COARRI SERVICE (N4 to BSIMS)
+model CoarriService {
+  id          Int      @id @default(autoincrement())
+  ref_number  String   // Ref number [cite: 57]
+  kd_status   String   // Status code [cite: 57]
+  updated_at  DateTime @updatedAt // Updated date [cite: 57]
+  updated_by  String   // Updated by [cite: 57]
+
+  @@map("coarri_services")
+}
+
+// 7. REALISASI TAMBAT (N4 to BSIMS)
+model RealisasiTambat {
+  id                Int      @id @default(autoincrement())
+  nomor_pkk         String   // PKK reference number [cite: 58]
+  nomor_ppk         String   // PPK reference number [cite: 58]
+  no_ppkb_tambat    String   // Berthing PPKB number [cite: 58]
+  tgl_mulai_tambat  DateTime // Berthing start date [cite: 58]
+  tgl_selesai_tambat DateTime // Berthing end date [cite: 58]
+  dermaga           String   // Berth name [cite: 58]
+  gt                Float    // Gross tonnage [cite: 58]
+  biaya             Decimal  // Total cost [cite: 58]
+  timestamp         DateTime @default(now()) // Record timestamp [cite: 58]
+
+  @@map("realisasi_tambat")
+}
+
+// 8. RPKRO (N4 to BSIMS)
+model Rpkro {
+  id              Int      @id @default(autoincrement())
+  nomor_rpkro     String   @unique // RPKRO reference number [cite: 59]
+  nomor_ppk       String   // ppk reference number [cite: 59]
+  nomor_layanan   String   // Service number [cite: 59]
+  kode_dermaga    String   // Berth code [cite: 59]
+  tanggal_rencana DateTime // Planned date [cite: 59]
+  komoditi        String?  // Commodity type [cite: 59]
+  timestamp       DateTime @default(now()) // Record timestamp [cite: 59]
+
+  @@map("rpkro_services")
+}
+
+// 9. SUBMIT MANIFEST (BSIMS – N4)
+model SubmitManifest {
+  id          Int      @id @default(autoincrement())
+  no_bl_awb   String   // Bill of Lading Air Waybill Number [cite: 60]
+  tgl_bl_awb  DateTime // BL Air Waybill Date [cite: 60]
+  consignee   String   // Consignee [cite: 60]
+  bruto       Float    // Gross Weight (KGS) [cite: 60]
+  no_cont     String   // Container Number [cite: 60]
+  uk_cont     String   // Container Size [cite: 60]
+  timestamp   DateTime @default(now()) // Current API Timestamp [cite: 60]
+
+  @@map("submit_manifests")
+}
+
+// 10. NPE (BSIMS to N4)
+model NpeService {
+  id             Int      @id @default(autoincrement())
+  no_npe         String   @unique // NPE Number [cite: 62]
+  tg_npe         DateTime // NPE Date [cite: 62]
+  no_peb         String   // PEB Number [cite: 62]
+  no_cont        String   // Container Number [cite: 62]
+  size           String   // Container Size [cite: 62]
+  nama_kapal     String   // Vessel Name [cite: 62]
+  no_voy_flight  String   // Voyage Number [cite: 62]
+  timestamp      DateTime @default(now()) // Current API Timestamp [cite: 62]
+
+  @@map("npe_services")
+}
