@@ -1,26 +1,24 @@
 const { prisma } = require('../config/database');
 const { HTTP_STATUS } = require('../config/constants');
-const { sendSuccess, sendError } = require('../utils/responseHelper');
+const { sendError } = require('../utils/responseHelper');
 const { parseDateTime } = require('../utils/dateHelper');
 
 /**
- * Entry/Insert new CODECO data
- * @route POST /entry_codeco
+ * Entry/Insert new COARRI data
+ * @route POST /entry_coarri
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-const entryCodeco = async (req, res) => {
+const entryCoarri = async (req, res) => {
   try {
     const {
       ref_number,
-      id_gatepass,
-      transportation_id,
-      no_kendaraan,
-      car,
-      spj_no,
-      spj_date,
-      gate_in,
-      gate_out,
+      nm_angkut,
+      call_sign,
+      no_voy_flight,
+      kd_pbm,
+      jml_total,
+      jml_out,
       category,
       kd_transaksi,
       no_cont,
@@ -44,9 +42,6 @@ const entryCodeco = async (req, res) => {
     // Validasi required fields
     const requiredFields = {
       ref_number: 'Ref Number',
-      id_gatepass: 'Gatepass ID',
-      transportation_id: 'Transportation ID',
-      no_kendaraan: 'Vehicle Number',
       category: 'Category',
       kd_transaksi: 'Transaction Code',
       no_cont: 'Container Number',
@@ -64,17 +59,15 @@ const entryCodeco = async (req, res) => {
       }
     }
 
-    // Parse tanggal-tanggal yang ada
+    // Parse data
     const parsedData = {
       ref_number,
-      id_gatepass,
-      transportation_id,
-      no_kendaraan,
-      car: car || null,
-      spj_no: spj_no || null,
-      spj_date: spj_date ? parseDateTime(spj_date) : null,
-      gate_in: gate_in ? parseDateTime(gate_in) : null,
-      gate_out: gate_out ? parseDateTime(gate_out) : null,
+      nm_angkut: nm_angkut || null,
+      call_sign: call_sign || null,
+      no_voy_flight: no_voy_flight || null,
+      kd_pbm: kd_pbm || null,
+      jml_total: jml_total ? parseInt(jml_total) : null,
+      jml_out: jml_out ? parseInt(jml_out) : null,
       category,
       kd_transaksi,
       no_cont,
@@ -96,7 +89,7 @@ const entryCodeco = async (req, res) => {
     };
 
     // Insert data ke database
-    const newCodeco = await prisma.codecoService.create({
+    const newCoarri = await prisma.coarriService.create({
       data: parsedData
     });
 
@@ -107,29 +100,22 @@ const entryCodeco = async (req, res) => {
     // 3 = Keluar
     // 4 = Masuk
     let status_tercatat = 'RECORDED';
-
-    if (newCodeco.kd_status) {
+    
+    if (newCoarri.kd_status) {
       const statusMap = {
         '1': 'BONGKAR',
         '2': 'MUAT',
         '3': 'KELUAR',
         '4': 'MASUK'
       };
-      status_tercatat = statusMap[newCodeco.kd_status] || 'RECORDED';
-    } else {
-      // Fallback: jika kd_status tidak ada, gunakan logika gate_in/gate_out
-      if (newCodeco.gate_in && !newCodeco.gate_out) {
-        status_tercatat = 'GATE_IN_RECORDED';
-      } else if (newCodeco.gate_out) {
-        status_tercatat = 'GATE_OUT_RECORDED';
-      }
+      status_tercatat = statusMap[newCoarri.kd_status] || 'RECORDED';
     }
 
     // Format response sesuai spesifikasi
     const responseData = {
-      ref_number: newCodeco.ref_number,
+      ref_number: newCoarri.ref_number,
       status_tercatat: status_tercatat,
-      timestamp: newCodeco.created_at.toISOString()
+      timestamp: newCoarri.created_at.toISOString()
     };
 
     // Success response
@@ -143,14 +129,14 @@ const entryCodeco = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in entryCodeco:', error);
+    console.error('Error in entryCoarri:', error);
     
     // Handle Prisma errors
     if (error.code === 'P2002') {
       return sendError(
         res,
         HTTP_STATUS.BAD_REQUEST,
-        'CODECO with this ref_number already exists'
+        'COARRI with this ref_number already exists'
       );
     }
 
@@ -163,6 +149,6 @@ const entryCodeco = async (req, res) => {
 };
 
 module.exports = {
-  entryCodeco
+  entryCoarri
 };
 

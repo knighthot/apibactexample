@@ -5,10 +5,11 @@ const router = express.Router();
 const pkkRoutes = require('./pkkRoutes');
 const transportationRoutes = require('./transportationRoutes');
 const codecoRoutes = require('./codecoRoutes');
+const coarriRoutes = require('./coarriRoutes');
 // TODO: Import other service routes here
 // const sppbRoutes = require('./sppbRoutes');
 // const sp2Routes = require('./sp2Routes');
-// etc...
+// etc..
 
 // Health check endpoint
 router.get('/', (req, res) => {
@@ -24,6 +25,7 @@ router.get('/', (req, res) => {
 router.use('/', pkkRoutes);
 router.use('/', transportationRoutes);
 router.use('/', codecoRoutes);
+router.use('/', coarriRoutes);
 // TODO: Mount other service routes here
 // router.use('/', sppbRoutes);
 // router.use('/', sp2Routes);

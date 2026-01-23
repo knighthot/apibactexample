@@ -87,72 +87,48 @@ model Sp2Service {
 }
 
 // 5. CODECO SERVICE (N4 to BSIMS)
-// Berdasarkan Lampiran Berita Acara Spesifikasi Teknis 
+// Container Discharge/Loading Order
 model CodecoService {
   id                 Int       @id @default(autoincrement())
-  
-  // Identitas Transaksi & Gate
-  ref_number         String    // Ref Number 
-  id_gatepass        String    // Gatepass id 
-  transportation_id  String    // Transportation id 
-  no_kendaraan       String    // Vehicle number 
-  category           String    // Category 
-  kd_transaksi       String    // Transaction code 
-  ref_transaksi      String?   // Transaction ref 
-  kd_dok_inout       String?   // Dok inout code 
-  car                String?   // Car 
-  no_dok_inout       String?   // Dok inout number 
-  tgl_dok_inout      DateTime? // Dok inout date 
-  
-  // Pengajuan & Transportasi
-  no_pengajuan       String?   // Submission number 
-  tgl_pengajuan      DateTime? // Submission date 
-  nm_angkut          String?   // Name 
-  call_sign          String?   // Call sign 
-  spj_no             String?   // Spj number 
-  spj_date           DateTime? // Spj date 
-  no_voy_flight      String?   // Voy flight number 
-  
-  // Data Jumlah & Lokasi
-  jml_total          Int?      // Amount 
-  jml_out            Int?      // Out Amount 
-  gate_in            DateTime? // Gate in 
-  gate_out           DateTime? // Gate out 
-  kd_pelabuhan       String?   // Port code 
-  kd_gudang          String?   // Warehouse code 
-  kd_tps             String?   // Tps code 
-  kd_pbm             String?   // PBM code 
-  
-  // Data Shipping & Status
-  kd_shipping        String?   // Shipping code 
-  kd_shipping_line   String?   // Shipping line code 
-  kd_status          String?   // Status code 
-  kd_kelompok        String?   // Group code 
-  
-  // Data Kontainer (Container Details)
-  no_cont            String    // Cont number 
-  uk_cont            String    // Cont uk 
-  jns_cont           String    // Cont type 
-  jns_cont_nm        String?   // Cont type name 
-  fl_cont_kosong     String?   // Cont empty fl 
-  fl_cont_kosong_nm  String?   // Cont empty fl name 
-  
-  // Data Dokumen & Manifest
-  no_bl_awb          String    // Bl awb number 
-  tgl_bl_awb         DateTime? // Bl awb date 
-  no_bc11            String?   // Bc11 number 
-  tgl_bc11           DateTime? // Bc11 date 
-  no_pos_bc11        String?   // Bc11 pos number 
-  no_segel_bc        String?   // Bc segel number 
-  
-  // Data Consignee & Fisik
-  id_consignee       String?   // Consignee id 
-  consignee          String?   // Consignee 
-  bruto              Float?    // Bruto 
-  volume             Float?    // Volume 
-  ref_id_detil       String?   // Detail ref id 
 
-  // Metadata internal (Saran tambahan untuk tracking)
+  // Identitas Transaksi & Gate
+  ref_number         String    // Ref Number
+  id_gatepass        String    // Gatepass id
+  transportation_id  String    // Transportation id
+  no_kendaraan       String    // Vehicle number
+  car                String?   // Car
+  spj_no             String?   // Spj number
+  spj_date           DateTime? // Spj date
+  gate_in            DateTime? // Gate in
+  gate_out           DateTime? // Gate out
+
+  // Transaksi & Kategori
+  category           String    // Category
+  kd_transaksi       String    // Transaction code
+
+  // Data Kontainer (Container Details)
+  no_cont            String    // Container number
+  uk_cont            String    // Container size
+  jns_cont           String    // Container type
+  fl_cont_kosong     String?   // Container empty flag
+  no_segel_bc        String?   // BC seal number
+
+  // Data Dokumen
+  no_dok_inout       String?   // Dok inout number
+  tgl_dok_inout      DateTime? // Dok inout date
+  no_bc11            String?   // BC11 number
+  tgl_bc11           DateTime? // BC11 date
+  no_bl_awb          String?   // BL/AWB number
+
+  // Data Fisik & Lokasi
+  bruto              Float?    // Bruto weight
+  id_consignee       String?   // Consignee id
+  kd_pelabuhan       String?   // Port code
+  kd_gudang          String?   // Warehouse code
+  kd_tps             String?   // TPS code
+  kd_status          String?   // Status code (1=Bongkar, 2=Muat, 3=Keluar, 4=Masuk)
+
+  // Metadata
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
 
@@ -160,12 +136,52 @@ model CodecoService {
 }
 
 // 6. COARRI SERVICE (N4 to BSIMS)
+// Container Arrival Notice
 model CoarriService {
-  id          Int      @id @default(autoincrement())
-  ref_number  String   // Ref number [cite: 57]
-  kd_status   String   // Status code [cite: 57]
-  updated_at  DateTime @updatedAt // Updated date [cite: 57]
-  updated_by  String   // Updated by [cite: 57]
+  id                 Int       @id @default(autoincrement())
+
+  // Identitas Referensi
+  ref_number         String    // Ref number
+
+  // Data Transportasi
+  nm_angkut          String?   // Vessel/Transport name
+  call_sign          String?   // Call sign
+  no_voy_flight      String?   // Voyage/Flight number
+  kd_pbm             String?   // PBM code
+
+  // Data Jumlah
+  jml_total          Int?      // Total amount
+  jml_out            Int?      // Out amount
+
+  // Transaksi & Kategori
+  category           String    // Category
+  kd_transaksi       String    // Transaction code
+
+  // Data Kontainer (Container Details)
+  no_cont            String    // Container number
+  uk_cont            String    // Container size
+  jns_cont           String    // Container type
+  fl_cont_kosong     String?   // Container empty flag
+  no_segel_bc        String?   // BC seal number
+
+  // Data Dokumen
+  no_dok_inout       String?   // Dok inout number
+  tgl_dok_inout      DateTime? // Dok inout date
+  no_bc11            String?   // BC11 number
+  tgl_bc11           DateTime? // BC11 date
+  no_bl_awb          String?   // BL/AWB number
+
+  // Data Fisik & Lokasi
+  bruto              Float?    // Bruto weight
+  id_consignee       String?   // Consignee id
+  kd_pelabuhan       String?   // Port code
+  kd_gudang          String?   // Warehouse code
+  kd_tps             String?   // TPS code
+  kd_status          String?   // Status code (1=Bongkar, 2=Muat, 3=Keluar, 4=Masuk)
+
+  // Metadata
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
 
   @@map("coarri_services")
 }
