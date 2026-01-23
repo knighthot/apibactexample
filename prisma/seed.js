@@ -133,6 +133,104 @@ async function main() {
   }
 
   console.log(`✅ Created ${pkkData.length} PKK Service records`);
+
+  // Seed Transportation Service
+  console.log('🚛 Seeding Transportation Service...');
+
+  const transportationData = [
+    {
+      no_kendaraan: 'BP 1234 XX',
+      nama_perusahaan: 'PT Batam Terminal Petikemas',
+      nama_perorangan: 'Fikramul Bizli',
+      available: 'Available',
+      masa_expired: new Date('2026-12-31'),
+    },
+    {
+      no_kendaraan: 'BP 5678 YY',
+      nama_perusahaan: 'PT Pelindo Terminal Petikemas',
+      nama_perorangan: 'Ahmad Suryanto',
+      available: 'Available',
+      masa_expired: new Date('2026-11-30'),
+    },
+    {
+      no_kendaraan: 'BP 9012 ZZ',
+      nama_perusahaan: 'PT Jaya Logistik Indonesia',
+      nama_perorangan: 'Budi Santoso',
+      available: 'Available',
+      masa_expired: new Date('2026-10-15'),
+    },
+    {
+      no_kendaraan: 'BP 3456 AA',
+      nama_perusahaan: 'PT Maju Bersama Transport',
+      nama_perorangan: 'Siti Nurhaliza',
+      available: 'Not Available',
+      masa_expired: new Date('2026-09-20'),
+    },
+    {
+      no_kendaraan: 'BP 7890 BB',
+      nama_perusahaan: 'PT Sejahtera Cargo',
+      nama_perorangan: 'Dedi Kurniawan',
+      available: 'Available',
+      masa_expired: new Date('2026-08-25'),
+    },
+    {
+      no_kendaraan: 'BP 2345 CC',
+      nama_perusahaan: 'PT Nusantara Logistics',
+      nama_perorangan: 'Rina Wati',
+      available: 'Available',
+      masa_expired: new Date('2027-01-15'),
+    },
+    {
+      no_kendaraan: 'BP 6789 DD',
+      nama_perusahaan: 'PT Global Transport Services',
+      nama_perorangan: 'Hendra Wijaya',
+      available: 'Available',
+      masa_expired: new Date('2026-07-10'),
+    },
+    {
+      no_kendaraan: 'BP 0123 EE',
+      nama_perusahaan: 'PT Mandiri Trucking',
+      nama_perorangan: 'Yudi Prasetyo',
+      available: 'Not Available',
+      masa_expired: new Date('2026-06-05'),
+    },
+    {
+      no_kendaraan: 'BP 4567 FF',
+      nama_perusahaan: 'PT Samudera Logistics',
+      nama_perorangan: 'Dewi Lestari',
+      available: 'Available',
+      masa_expired: new Date('2027-02-28'),
+    },
+    {
+      no_kendaraan: 'BP 8901 GG',
+      nama_perusahaan: 'PT Anugrah Transport',
+      nama_perorangan: 'Rudi Hartono',
+      available: 'Available',
+      masa_expired: new Date('2026-05-18'),
+    },
+    {
+      no_kendaraan: 'BP 2468 HH',
+      nama_perusahaan: 'PT Berkah Jaya Cargo',
+      nama_perorangan: 'Lina Marlina',
+      available: 'Available',
+      masa_expired: new Date('2027-03-12'),
+    },
+    {
+      no_kendaraan: 'BP 1357 II',
+      nama_perusahaan: 'PT Sentosa Logistics',
+      nama_perorangan: 'Agus Salim',
+      available: 'Not Available',
+      masa_expired: new Date('2026-04-22'),
+    },
+  ];
+
+  for (const trans of transportationData) {
+    await prisma.transportationService.create({
+      data: trans,
+    });
+  }
+
+  console.log(`✅ Created ${transportationData.length} Transportation Service records`);
   console.log('🎉 Seed completed successfully!');
 }
 
