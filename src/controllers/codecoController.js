@@ -35,6 +35,7 @@ const entryCodeco = async (req, res) => {
       no_bl_awb,
       bruto,
       id_consignee,
+      consignee,
       kd_pelabuhan,
       kd_gudang,
       kd_tps,
@@ -64,6 +65,19 @@ const entryCodeco = async (req, res) => {
       }
     }
 
+    // Validasi ref_number tidak boleh duplikat
+    const existingCodeco = await prisma.codecoService.findFirst({
+      where: { ref_number }
+    });
+
+    if (existingCodeco) {
+      return sendError(
+        res,
+        HTTP_STATUS.BAD_REQUEST,
+        `CODECO with ref_number "${ref_number}" already exists`
+      );
+    }
+
     // Parse tanggal-tanggal yang ada
     const parsedData = {
       ref_number,
@@ -89,6 +103,7 @@ const entryCodeco = async (req, res) => {
       no_bl_awb: no_bl_awb || null,
       bruto: bruto ? parseFloat(bruto) : null,
       id_consignee: id_consignee || null,
+      consignee: consignee || null,
       kd_pelabuhan: kd_pelabuhan || null,
       kd_gudang: kd_gudang || null,
       kd_tps: kd_tps || null,
@@ -119,9 +134,9 @@ const entryCodeco = async (req, res) => {
     } else {
       // Fallback: jika kd_status tidak ada, gunakan logika gate_in/gate_out
       if (newCodeco.gate_in && !newCodeco.gate_out) {
-        status_tercatat = 'GATE_IN_RECORDED';
+        status_tercatat = 'GATE_IN';
       } else if (newCodeco.gate_out) {
-        status_tercatat = 'GATE_OUT_RECORDED';
+        status_tercatat = 'GATE_OUT_';
       }
     }
 
@@ -162,7 +177,98 @@ const entryCodeco = async (req, res) => {
   }
 };
 
+/**
+ * Update CODECO data (kd_status) by ref_number
+ * @route POST /update_codeco
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const updateCodeco = async (req, res) => {
+  try {
+    const { ref_number, kd_status } = req.body;
+
+    // Validasi required fields
+    if (!ref_number) {
+      return sendError(
+        res,
+        HTTP_STATUS.BAD_REQUEST,
+        'Field "ref_number" is required'
+      );
+    }
+
+    if (!kd_status) {
+      return sendError(
+        res,
+        HTTP_STATUS.BAD_REQUEST,
+        'Field "kd_status" is required'
+      );
+    }
+
+    // Cek apakah data dengan ref_number ada
+    const existingCodeco = await prisma.codecoService.findFirst({
+      where: { ref_number }
+    });
+
+    if (!existingCodeco) {
+      return sendError(
+        res,
+        HTTP_STATUS.BAD_REQUEST,
+        `CODECO with ref_number "${ref_number}" not found`
+      );
+    }
+
+    // Update kd_status
+    const updatedCodeco = await prisma.codecoService.update({
+      where: { id: existingCodeco.id },
+      data: { kd_status }
+    });
+
+    // Tentukan status code berdasarkan kd_status
+    // Status Reference:
+    // 1 = Bongkar
+    // 2 = Muat
+    // 3 = Keluar
+    // 4 = Masuk
+    const statusMap = {
+      '1': 'BONGKAR',
+      '2': 'MUAT',
+      '3': 'KELUAR',
+      '4': 'MASUK'
+    };
+    const status_code = statusMap[kd_status] || kd_status;
+
+    // Format response sesuai spesifikasi
+    const responseData = {
+      ref_number: updatedCodeco.ref_number,
+      kd_status: updatedCodeco.kd_status,
+      updated_at: updatedCodeco.updated_at.toISOString().split('T')[0] + ' ' +
+                  updatedCodeco.updated_at.toISOString().split('T')[1].split('.')[0],
+      updated_by: 'SYSTEM_N4',
+      timestamp: updatedCodeco.updated_at.toISOString()
+    };
+
+    // Success response
+    return res.status(HTTP_STATUS.OK).json({
+      response: {
+        status: 1,
+        code: HTTP_STATUS.OK,
+        message: 'Perubahan Status codeco berhasil disimpan',
+        data: responseData
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in updateCodeco:', error);
+    return sendError(
+      res,
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      'Internal server error'
+    );
+  }
+};
+
 module.exports = {
-  entryCodeco
+  entryCodeco,
+  updateCodeco
 };
 

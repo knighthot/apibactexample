@@ -231,6 +231,95 @@ async function main() {
   }
 
   console.log(`✅ Created ${transportationData.length} Transportation Service records`);
+
+  // Seed SPPB Service
+  console.log('📋 Seeding SPPB Service...');
+
+  const sppbData = [
+    {
+      nomor_sppb: '000006/SPPB/KPU.02/2026',
+      tanggal_sppb: new Date('2026-01-22'),
+      nomor_kontainer: 'MRKU3764460',
+      nomor_bl: 'BL-9988-ABC'
+    },
+    {
+      nomor_sppb: '000007/SPPB/KPU.02/2026',
+      tanggal_sppb: new Date('2026-01-23'),
+      nomor_kontainer: 'TCLU4567890',
+      nomor_bl: 'BL-9989-DEF'
+    },
+    {
+      nomor_sppb: '000008/SPPB/KPU.02/2026',
+      tanggal_sppb: new Date('2026-01-23'),
+      nomor_kontainer: 'MSCU8901234',
+      nomor_bl: 'BL-9990-GHI'
+    },
+    {
+      nomor_sppb: '000009/SPPB/KPU.02/2026',
+      tanggal_sppb: new Date('2026-01-24'),
+      nomor_kontainer: 'HLBU2345678',
+      nomor_bl: 'BL-9991-JKL'
+    },
+    {
+      nomor_sppb: '000010/SPPB/KPU.02/2026',
+      tanggal_sppb: new Date('2026-01-24'),
+      nomor_kontainer: 'CMAU6789012',
+      nomor_bl: 'BL-9992-MNO'
+    }
+  ];
+
+  for (const sppb of sppbData) {
+    await prisma.sppbService.upsert({
+      where: { nomor_sppb: sppb.nomor_sppb },
+      update: {},
+      create: sppb,
+    });
+  }
+
+  console.log(`✅ Created ${sppbData.length} SPPB Service records`);
+
+  // Seed NPE Service
+  console.log('📄 Seeding NPE Service...');
+
+  const npeData = [
+    {
+      no_npe: 'NPE-BTM-2026-0001',
+      tg_npe: new Date('2026-01-22'),
+      no_peb: 'PEB-000123',
+      no_cont: 'TCNU1234567',
+      size: '20',
+      nama_kapal: 'MV. OCEAN BREEZE',
+      no_voy_flight: 'V.2026.01'
+    },
+    {
+      no_npe: 'NPE-BTM-2026-0002',
+      tg_npe: new Date('2026-01-23'),
+      no_peb: 'PEB-000124',
+      no_cont: 'MSCU8765432',
+      size: '40',
+      nama_kapal: 'MV. PACIFIC STAR',
+      no_voy_flight: 'V.2026.02'
+    },
+    {
+      no_npe: 'NPE-BTM-2026-0003',
+      tg_npe: new Date('2026-01-24'),
+      no_peb: 'PEB-000125',
+      no_cont: 'HLBU9876543',
+      size: '40',
+      nama_kapal: 'MV. ASIAN GLORY',
+      no_voy_flight: 'V.2026.03'
+    }
+  ];
+
+  for (const npe of npeData) {
+    await prisma.npeService.upsert({
+      where: { no_npe: npe.no_npe },
+      update: {},
+      create: npe,
+    });
+  }
+
+  console.log(`✅ Created ${npeData.length} NPE Service records`);
   console.log('🎉 Seed completed successfully!');
 }
 

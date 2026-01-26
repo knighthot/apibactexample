@@ -60,28 +60,37 @@ model SppbService {
 // 4. SP2 Service (N4 to BSIMS)
 
 model Sp2Service {
-  id                     Int      @id @default(autoincrement())
-  nomor_sp2              String   @unique // SP2 Number [cite: 63]
-  nomor_do_pelayaran     String   // Shipping Line DO [cite: 63]
-  nomor_kontainer        String   // Container Number [cite: 63]
-  nomor_bl               String   // Bill of Lading No [cite: 63]
-  iso_code               String?  // Container ISO Code [cite: 63]
-  pemilik_kontainer      String?  // Container Owner [cite: 63]
-  nama_penerima          String   // Consignee Name [cite: 63]
-  npwp_penerima          String?  // Consignee Tax ID [cite: 63]
-  perusahaan_trucking    String?  // Trucking Company [cite: 63]
-  stid_truk              String?  // STID Number [cite: 63]
-  nopol_truk             String?  // Truck Plate Number [cite: 63]
-  nama_supir             String?  // Driver Name [cite: 63]
-  pin_gate               String?  // Gate Pass PIN [cite: 63]
-  tgl_awal_berlaku       DateTime // Valid From [cite: 63]
-  tgl_akhir_berlaku      DateTime // Valid Until [cite: 63]
-  batas_waktu_storage    DateTime? // Storage Paid Until [cite: 63]
-  status_hold            Boolean  @default(false) // Hold Status [cite: 63]
-  status_gate            String?  // Gate Status [cite: 63]
-  created_at             DateTime @default(now()) // Record Creation Date [cite: 63]
-  updated_at             DateTime @updatedAt // Record Last Update Date [cite: 63]
-  timestamp              DateTime @default(now()) // Current API Timestamp [cite: 63]
+  id                     Int       @id @default(autoincrement())
+  ref_number             String    @unique // Reference Number
+  nomor_sp2              String    // SP2 Number
+  nomor_do_pelayaran     String?   // Shipping Line DO
+  nomor_kontainer        String    // Container Number
+  nomor_bl               String?   // Bill of Lading No
+  iso_code               String?   // Container ISO Code
+  pemilik_kontainer      String?   // Container Owner
+  nama_penerima          String?   // Consignee Name
+  npwp_penerima          String?   // Consignee Tax ID
+  perusahaan_trucking    String?   // Trucking Company
+  stid_truk              String?   // STID Number
+  nopol_truk             String?   // Truck Plate Number
+  nama_supir             String?   // Driver Name
+  pin_gate               String    // Gate Pass PIN
+  tgl_awal_berlaku       DateTime? // Valid From
+  tgl_akhir_berlaku      DateTime? // Valid Until
+  batas_waktu_storage    DateTime? // Storage Paid Until
+  nomor_sppb             String?   // SPPB Number
+  status_segel_bc        String?   // BC Seal Status
+  status_admin_pelayaran String?   // Shipping Admin Status
+  status_uang_jaminan    String?   // Deposit Status
+  status_storage         String?   // Storage Status
+  depo_pengembalian      String?   // Return Depot
+  jenis_pengeluaran      String?   // Release Type
+  lokasi_kontainer       String?   // Container Location
+  status_hold            String?   // Hold Status
+  status_gate            String?   // Gate Status
+  created_at             DateTime  @default(now()) // Record Creation Date
+  updated_at             DateTime  @updatedAt // Record Last Update Date
+  timestamp              DateTime  @default(now()) // Current API Timestamp
 
   @@map("sp2_services")
 }
@@ -92,7 +101,7 @@ model CodecoService {
   id                 Int       @id @default(autoincrement())
 
   // Identitas Transaksi & Gate
-  ref_number         String    // Ref Number
+  ref_number         String    @unique // Ref Number (unique)
   id_gatepass        String    // Gatepass id
   transportation_id  String    // Transportation id
   no_kendaraan       String    // Vehicle number
@@ -123,6 +132,7 @@ model CodecoService {
   // Data Fisik & Lokasi
   bruto              Float?    // Bruto weight
   id_consignee       String?   // Consignee id
+  consignee          String?   // Consignee name
   kd_pelabuhan       String?   // Port code
   kd_gudang          String?   // Warehouse code
   kd_tps             String?   // TPS code
@@ -141,7 +151,7 @@ model CoarriService {
   id                 Int       @id @default(autoincrement())
 
   // Identitas Referensi
-  ref_number         String    // Ref number
+  ref_number         String    @unique // Ref number (unique)
 
   // Data Transportasi
   nm_angkut          String?   // Vessel/Transport name
@@ -174,6 +184,7 @@ model CoarriService {
   // Data Fisik & Lokasi
   bruto              Float?    // Bruto weight
   id_consignee       String?   // Consignee id
+  consignee          String?   // Consignee name
   kd_pelabuhan       String?   // Port code
   kd_gudang          String?   // Warehouse code
   kd_tps             String?   // TPS code
@@ -188,30 +199,43 @@ model CoarriService {
 
 // 7. REALISASI TAMBAT (N4 to BSIMS)
 model RealisasiTambat {
-  id                Int      @id @default(autoincrement())
-  nomor_pkk         String   // PKK reference number [cite: 58]
-  nomor_ppk         String   // PPK reference number [cite: 58]
-  no_ppkb_tambat    String   // Berthing PPKB number [cite: 58]
-  tgl_mulai_tambat  DateTime // Berthing start date [cite: 58]
-  tgl_selesai_tambat DateTime // Berthing end date [cite: 58]
-  dermaga           String   // Berth name [cite: 58]
-  gt                Float    // Gross tonnage [cite: 58]
-  biaya             Decimal  // Total cost [cite: 58]
-  timestamp         DateTime @default(now()) // Record timestamp [cite: 58]
+  id                  Int      @id @default(autoincrement())
+  nomor_pkk           String   // PKK reference number
+  nomor_ppk           String   // PPK reference number
+  no_ppkb_tambat      String   // Berthing PPKB number
+  tgl_mulai_tambat    DateTime // Berthing start date & time
+  tgl_selesai_tambat  DateTime // Berthing end date & time
+  dermaga             String   // Berth name
+  gt                  Float    // Gross tonnage
+  biaya               Float    // Total cost
+  nomor_pkk_tugboat   String?  // Tugboat PKK number (optional)
+  timestamp           DateTime @default(now()) // Record timestamp
 
   @@map("realisasi_tambat")
 }
 
 // 8. RPKRO (N4 to BSIMS)
-model Rpkro {
-  id              Int      @id @default(autoincrement())
-  nomor_rpkro     String   @unique // RPKRO reference number [cite: 59]
-  nomor_ppk       String   // ppk reference number [cite: 59]
-  nomor_layanan   String   // Service number [cite: 59]
-  kode_dermaga    String   // Berth code [cite: 59]
-  tanggal_rencana DateTime // Planned date [cite: 59]
-  komoditi        String?  // Commodity type [cite: 59]
-  timestamp       DateTime @default(now()) // Record timestamp [cite: 59]
+model RpkroService {
+  id                     Int      @id @default(autoincrement())
+  nomor_rpkro            String   @unique // RPKRO reference number
+  nomor_ppk              String   // PPK reference number
+  nomor_ppkb             String   // PPKB reference number
+  nomor_layanan          String   // Service number
+  kode_dermaga           String   // Berth code
+  tanggal_rencana        DateTime // Planned date & time
+  npkb_nomor             String   // NPKB number
+  nomor_rkbm_muat        String   // RKBM Loading number
+  nomor_rkbm_bongkar     String   // RKBM Discharge number
+  kegiatan_bongkar       String   // Discharge activity
+  kegiatan_muat          String   // Loading activity
+  komoditi               String?  // Commodity type (optional)
+  nomor_gudang           String?  // Warehouse number (optional)
+  keterangan             String?  // Notes (optional)
+  tanggal_mulai_tambat   DateTime // Start berthing date & time
+  tanggal_selesai_tambat DateTime // End berthing date & time
+  kade_meter_awal        Float    // Start kade meter
+  kade_meter_akhir       Float    // End kade meter
+  timestamp              DateTime @default(now()) // Record timestamp
 
   @@map("rpkro_services")
 }

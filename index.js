@@ -7,10 +7,10 @@ const server = app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║   🚢 BACT API Integration Server                         ║
+║   🚢 BACT API Integration Server                          ║
 ║                                                           ║
-║   Server is running on http://localhost:${PORT}            ║
-║   Environment: ${process.env.NODE_ENV || 'development'}                              ║
+║   Server is running on http://localhost:${PORT}           ║
+║   Environment: ${process.env.NODE_ENV || 'development'}   ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
   `);

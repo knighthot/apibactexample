@@ -1,14 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { entryCoarri } = require('../controllers/coarriController');
-const { validateContentType } = require('../middleware/validateContentType');
+const { entryCoarri, updateCoarri } = require('../controllers/coarriController');
+const validateHeaders = require('../middleware/validateHeaders');
+const { ACCESS_KEYS } = require('../config/constants');
 
 /**
  * @route POST /entry_coarri
  * @desc Entry/Insert new COARRI data
- * @access Public (should be protected in production)
+ * @access Private (requires AccessKey: BACT-COARRI-2206)
+ * @headers Content-Type: application/x-www-form-urlencoded
+ *          User-Agent: BACT
+ *          AccessKey: BACT-COARRI-2206
  */
-router.post('/entry_coarri', validateContentType, entryCoarri);
+router.post('/entry_coarri', validateHeaders(ACCESS_KEYS.COARRI), entryCoarri);
+
+/**
+ * @route POST /update_coarri
+ * @desc Update COARRI kd_status by ref_number
+ * @access Private (requires AccessKey: BACT-COARRI-2206)
+ * @headers Content-Type: application/x-www-form-urlencoded
+ *          User-Agent: BACT
+ *          AccessKey: BACT-COARRI-2206
+ */
+router.post('/update_coarri', validateHeaders(ACCESS_KEYS.COARRI), updateCoarri);
 
 module.exports = router;
 
